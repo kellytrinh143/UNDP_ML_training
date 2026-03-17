@@ -1,0 +1,38 @@
+services:
+  app:
+    build: .
+    image: aadi:dev
+    working_dir: /workspace
+    environment:
+      - DATA_ROOT=/data
+      - OUTPUT_ROOT=/output
+    volumes:
+      - .:/workspace
+      - ${DATA_DIR:-${HOME}/data/AADI}:/data
+      - ./outputs:/output
+    command: sleep infinity
+    tty: true
+    stdin_open: true
+
+  jupyter:
+    build: .
+    image: aadi:dev
+    working_dir: /workspace
+    environment:
+      - DATA_ROOT=/data
+      - OUTPUT_ROOT=/output
+    volumes:
+      - .:/workspace
+      - ${DATA_DIR:-${HOME}/data/AADI}:/data
+      - ./outputs:/output
+    ports:
+      - "8888:8888"
+    command: >
+      jupyter lab
+      --ip=0.0.0.0
+      --port=8888
+      --no-browser
+      --allow-root
+      --notebook-dir=/workspace
+      --ServerApp.token=''
+      --ServerApp.password=''
