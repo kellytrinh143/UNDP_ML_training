@@ -1,0 +1,14 @@
+{
+  "name": "AADI (compose)",
+  "dockerComposeFile": ["../compose.yaml"],
+  "service": "app",
+  "workspaceFolder": "/workspace",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance"
+      ]
+    }
+  }
+}

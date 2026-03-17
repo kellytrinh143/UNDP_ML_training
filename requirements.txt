@@ -16,3 +16,7 @@ plotly
 xgboost
 shap
 joblib
+seaborn
+jupyterlab
+ipykernel
+notebook

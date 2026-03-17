@@ -1,14 +1,14 @@
 services:
   app:
     build: .
-    image: aadi:dev
+    image: ml:dev
     working_dir: /workspace
     environment:
       - DATA_ROOT=/data
       - OUTPUT_ROOT=/output
     volumes:
       - .:/workspace
-      - ${DATA_DIR:-${HOME}/data/AADI}:/data
+      - ./data:/data
       - ./outputs:/output
     command: sleep infinity
     tty: true
@@ -16,17 +16,17 @@ services:
 
   jupyter:
     build: .
-    image: aadi:dev
+    image: ml:dev
     working_dir: /workspace
     environment:
       - DATA_ROOT=/data
       - OUTPUT_ROOT=/output
     volumes:
       - .:/workspace
-      - ${DATA_DIR:-${HOME}/data/AADI}:/data
+      - ./data:/data
       - ./outputs:/output
     ports:
-      - "8888:8888"
+      - "8889:8888"
     command: >
       jupyter lab
       --ip=0.0.0.0
