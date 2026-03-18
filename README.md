@@ -18,16 +18,11 @@ Thi practical sessions show how to apply machine learning to wheat yield predict
 
 ## Data Description
 
-Each row = one **grid cell × one growing year**.
+Each row = one **grid cell × one growing year**. Each grid cell has a resolution of 5km x 5km.
 
-**Growth windows:**
-- `W1_estab` — Establishment
-- `W2_veg` — Vegetative growth
-- `W3_preAnth` — Pre-anthesis (critical for yield)
-- `W4_grainFill` — Grain filling
-- `W5_matur` — Maturation
---- 
 
+---
+**Basic features**
 | Column | Unit | Description |
 |--------|------|-------------|
 | `lat` | °S | Latitude of grid cell |
@@ -38,7 +33,22 @@ Each row = one **grid cell × one growing year**.
 | `wheat_yield` | t/ha | APSIM-simulated yield (target variable) |
 | `year` | — | Calendar year |
 
+#### Rainfall
+| Column | Unit | Description |
+|--------|------|-------------|
+| `rain_preseason` | mm | Total rainfall Feb–Apr. Represents stored soil moisture before sowing. |
+| `rain_early` | mm | Total rainfall May–Aug. Captures pre-flowering rainfall. |
+| `rain_late` | mm | Total rainfall Sep–Nov. Captures post-flowering rainfall. |
+
+#### Temperature
+
+| Column | Unit | Description |
+|--------|------|-------------|
+| `gdd_may_nov` | °Cd | Cumulative growing degree days May–Nov (base 0 °C). Average daily temperature (Tmax + Tmin) / 2 summed over the period. |
+| `frost_days_aug_oct` | days | Count of days with Tmin < 0 °C during Aug–Oct (flowering and grain fill window). |
+| `heat_days_aug_oct` | days | Count of days with Tmax > 32 °C during Aug–Oct (flowering and grain fill window). |
 ---
+
 
 ### Crop-Seasonal & Monthly Feature Variables
 The same feature are computed for every temporal slot (monthly, and crop-seasonal)
@@ -49,8 +59,6 @@ The same feature are computed for every temporal slot (monthly, and crop-seasona
 | `rad_mean` | MJ/m²/d | Mean daily solar radiation. Drives biomass accumulation via RUE. |
 | `rad_sum` | MJ/m² | Cumulative radiation. Total energy available for photosynthesis. |
 | `tmean` | °C | Mean daily temperature (Tmax + Tmin) / 2 |
-| `tmax_max` | °C | Maximum of daily Tmax. Detects heat extremes (>34 °C). |
-| `tmin_min` | °C | Minimum of daily Tmin. Detects frost events (<0 °C). |
 | `diurnal` | °C | Mean diurnal temperature range (Tmax − Tmin). |
 | `heat_days` | days | Count of days with Tmax > 34 °C. Heat damage |
 | `frost_days` | days | Count of days with Tmin < 0 °C. Frost damage potential. |
@@ -58,30 +66,36 @@ The same feature are computed for every temporal slot (monthly, and crop-seasona
 | `fasw_mean` | 0–2 | Mean fraction of available soil water: SM / PAWC. |
 | `fw_photo` | 0–1 | Mean photosynthesis water stress: min(FASW / 0.5, 1). |
 ---
+**Growth windows: based on APSIM**
+- `W1_estab` — Establishment
+- `W2_veg` — Vegetative growth
+- `W3_preAnth` — Pre-anthesis (critical for yield)
+- `W4_grainFill` — Grain filling
+- `W5_matur` — Maturation
+
+
 | Slot name | Meaning |
 |-----------|---------|
 | `mpre6` … `mpre1` | 6 calendar months before the sowing month |
-| `m0` | Sowing month (only post-sowing days included) |
-| `m1` … `m8` | Months 1–8 after sowing month |
 ---
 ## Questions by Session
 
 ### Session 1 — Data & Linear Regression
-1. What is in the dataset? (Q1.1, Q1.2)
-2. What drives yield most — rainfall or temperature? (Q2.2, Q2.3)
-3. How do you interpret regression coefficients? (Q3.1)
-4. What do residual plots reveal? (Q4.1)
-5. When does linear regression fail? (Q4.2)
+1. What is in the dataset? 
+2. What drives yield most — rainfall or temperature? 
+3. How do you interpret regression coefficients? 
+4. What do residual plots reveal? 
+5. When does linear regression fail? 
 
 ### Session 2 — Random Forest
-1. Why do single trees overfit? (Q1.1, Q1.2)
-2. How does Random Forest fix the overfitting problem? (concept)
+1. Why do single trees overfit? 
+2. How does Random Forest fix the overfitting problem? 
 3. How many trees are enough? 
-4. What is permutation importance and why is it more reliable? (Q3.1)
-5. Temporal vs random validation — which is more realistic? (Q4.1)
+4. What is permutation importance and why is it more reliable? 
+5. Temporal vs random validation — which is more realistic? 
 
 ### Session 3 — XGBoost
-1. What is the difference between bagging and boosting? (Part 1)
+1. What is the difference between bagging and boosting? 
 2. What does each XGBoost hyperparameter control?
 3. How do SHAP values explain individual predictions? 
 4. What are the limitations of tree-based models? 
