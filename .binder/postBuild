@@ -1,0 +1,8 @@
+#!/bin/bash
+set -e
+
+mkdir -p data
+gdown --fuzzy "https://drive.google.com/file/d/15_zt4uBXzRpaoQZvj-EZ6PLmYeJ82rz4/view?usp=drive_link" -O data/wheat_features.parquet
+
+# Session 2 currently expects a root-level filename.
+ln -sf data/wheat_features.parquet subset_WA_allcells_1989-2021.parquet
