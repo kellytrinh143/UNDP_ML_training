@@ -16,4 +16,6 @@ ipykernel
 notebook
 statsmodels
 scipy
+pyarrow
+fastparquet
 
