@@ -53,7 +53,8 @@ Each row = one **grid cell × one growing year** for Western Australia. Each gri
 | `gdd_may_nov` | °Cd | Cumulative growing degree days May–Nov (base 0 °C). Calculated as sum of max((Tmax + Tmin) / 2, 0) over the period. |
 | `frost_days_aug_oct` | days | Count of days with Tmin < 2 °C during Aug–Oct (flowering and grain fill window). |
 | `heat_days_aug_oct` | days | Count of days with Tmax > 32 °C during Aug–Oct (flowering and grain fill window). |
-
+| `rad_aug_oct` | MJ/m² | Captures light energy available during the critical flowering and grain fill period|
+| `fasw_mean_aug_oct` | -| Captures soil water availability during the stress-sensitive reproductive window.
 ---
 
 ### Monthly Rainfall (15 months)
@@ -89,8 +90,8 @@ These variables are computed for each month from sowing onward (`m0` through `m8
 | Monthly radiation (post-sow) | rad_sum_m0 … rad_sum_m8 | 9 |
 | Monthly FASW (post-sow) | fasw_mean_m0 … fasw_mean_m8 | 9 |
 | Monthly GDD (post-sow) | gdd_m0 … gdd_m8 | 9 |
-| Seasonal aggregates | rain_preseason, rain_early, rain_late, gdd_may_nov, frost_days_aug_oct, heat_days_aug_oct | 6 |
-| **Total** | | **55** |
+| Seasonal aggregates | rain_preseason, rain_early, rain_late, gdd_may_nov, frost_days_aug_oct, heat_days_aug_oct, rad_aug_oct, fasw_mean_aug_oct | 8 |
+| **Total** | | **57** |
 
 ---
 
