@@ -30,7 +30,7 @@ Each row = one **grid cell × one growing year** for Western Australia. Each gri
 | `lon` | °E | Longitude of grid cell |
 | `year` | — | Calendar year |
 | `sowing_doy` | day | Day-of-year of sowing (NaN if not sown) |
-| `wheat_yield` | t/ha | APSIM-simulated yield (**target variable**) |
+| `wheat_yield` | t/ha | wheat yield (**target variable**) |
 | `pawc_0_30_mm` | mm | Plant Available Water Capacity, 0–30 cm depth |
 | `ph_0_30` | — | Depth-weighted mean soil pH, 0–30 cm |
 
