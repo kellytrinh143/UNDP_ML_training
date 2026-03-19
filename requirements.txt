@@ -4,14 +4,8 @@ scikit-learn
 xarray
 netCDF4
 matplotlib
-dask[array]
-distributed 
-zarr 
 numcodecs
-pyarrow
 lxml
-quantile-forest
-jupyter
 plotly
 xgboost
 shap
@@ -20,3 +14,5 @@ seaborn
 jupyterlab
 ipykernel
 notebook
+gdown
+

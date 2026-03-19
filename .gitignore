@@ -15,3 +15,7 @@ data/
 *.synctex.gz
 *.aux
 archive
+Dockerfile
+.dockerignore
+.Rhistory
+.devcontainer
