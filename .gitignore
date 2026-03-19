@@ -7,7 +7,7 @@ venv/
 *.log
 runs/
 outputs/
-data/
+*.parquet
 !data/README.txt
 .env
 *.out
