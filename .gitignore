@@ -17,5 +17,5 @@ data/
 archive
 Dockerfile
 .dockerignore
-.Rhistory
+.Rhistory  
 .devcontainer
