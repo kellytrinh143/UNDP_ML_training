@@ -1,11 +1,11 @@
-# ML training -- Practical sessions
+# ML Training -- Practical Sessions
 
 
 ---
 
 ## Overview
 
-Thi practical sessions show how to apply machine learning to wheat yield prediction using real multiscale climate and soil data from Western Australia (1989–2021). 
+These practical sessions show how to apply machine learning to wheat yield prediction using real multiscale climate and soil data from Western Australia (1989–2020).
 
 | Session | Notebook | Model | Key Concepts |
 |---------|----------|-------|--------------|
@@ -18,93 +18,109 @@ Thi practical sessions show how to apply machine learning to wheat yield predict
 
 ## Data Description
 
-Each row = one **grid cell × one growing year**. Each grid cell has a resolution of 5km x 5km.
-
+Each row = one **grid cell × one growing year** for Western Australia. Each grid cell has a resolution of 5 km × 5 km. Data covers 1989–2020 (32 years).
 
 ---
-**Basic features**
+
+### Static Features
+
 | Column | Unit | Description |
 |--------|------|-------------|
 | `lat` | °S | Latitude of grid cell |
 | `lon` | °E | Longitude of grid cell |
+| `year` | — | Calendar year |
+| `sowing_doy` | day | Day-of-year of sowing (NaN if not sown) |
+| `wheat_yield` | t/ha | APSIM-simulated yield (**target variable**) |
 | `pawc_0_30_mm` | mm | Plant Available Water Capacity, 0–30 cm depth |
 | `ph_0_30` | — | Depth-weighted mean soil pH, 0–30 cm |
-| `minN_0_30` | mg/kg | Mineral nitrogen (NO₃ + NH₄), 0–30 cm |
-| `wheat_yield` | t/ha | APSIM-simulated yield (target variable) |
-| `year` | — | Calendar year |
 
-#### Rainfall
-| Column | Unit | Description |
-|--------|------|-------------|
-| `rain_preseason` | mm | Total rainfall Feb–Apr. Represents stored soil moisture before sowing. |
-| `rain_early` | mm | Total rainfall May–Aug. Captures pre-flowering rainfall. |
-| `rain_late` | mm | Total rainfall Sep–Nov. Captures post-flowering rainfall. |
+---
 
-#### Temperature
+### Seasonal Rainfall Aggregates
 
 | Column | Unit | Description |
 |--------|------|-------------|
-| `gdd_may_nov` | °Cd | Cumulative growing degree days May–Nov (base 0 °C). Average daily temperature (Tmax + Tmin) / 2 summed over the period. |
-| `frost_days_aug_oct` | days | Count of days with Tmin < 0 °C during Aug–Oct (flowering and grain fill window). |
+| `rain_preseason` | mm | Total rainfall Feb–Apr. |
+| `rain_early` | mm | Total rainfall May–Aug. Captures pre-flowering rainfall (sowing through vegetative growth). |
+| `rain_late` | mm | Total rainfall Sep–Nov. Captures post-flowering rainfall (grain filling period). |
+
+---
+
+### Temperature & Stress Aggregates
+
+| Column | Unit | Description |
+|--------|------|-------------|
+| `gdd_may_nov` | °Cd | Cumulative growing degree days May–Nov (base 0 °C). Calculated as sum of max((Tmax + Tmin) / 2, 0) over the period. |
+| `frost_days_aug_oct` | days | Count of days with Tmin < 2 °C during Aug–Oct (flowering and grain fill window). |
 | `heat_days_aug_oct` | days | Count of days with Tmax > 32 °C during Aug–Oct (flowering and grain fill window). |
+
 ---
 
+### Monthly Rainfall (15 months)
 
-### Crop-Seasonal & Monthly Feature Variables
-The same feature are computed for every temporal slot (monthly, and crop-seasonal)
-| Variable | Unit | Description |
-|----------|------|-------------|
-| `rain_sum` | mm | Total rainfall. Water input for the soil water balance. |
-| `rain_days` | days | Number of days with rainfall ≥ 1 mm. Rainfall frequency pattern. |
-| `rad_mean` | MJ/m²/d | Mean daily solar radiation. Drives biomass accumulation via RUE. |
-| `rad_sum` | MJ/m² | Cumulative radiation. Total energy available for photosynthesis. |
-| `tmean` | °C | Mean daily temperature (Tmax + Tmin) / 2 |
-| `diurnal` | °C | Mean diurnal temperature range (Tmax − Tmin). |
-| `heat_days` | days | Count of days with Tmax > 34 °C. Heat damage |
-| `frost_days` | days | Count of days with Tmin < 0 °C. Frost damage potential. |
-| `vpd_mean` | kPa | Mean vapour pressure deficit.|
-| `fasw_mean` | 0–2 | Mean fraction of available soil water: SM / PAWC. |
-| `fw_photo` | 0–1 | Mean photosynthesis water stress: min(FASW / 0.5, 1). |
+Total rainfall per calendar month, relative to the sowing month.
+| Column | Description |
+|--------|-------------|
+| `rain_mpre6` … `rain_mpre1` | Monthly total rainfall, 6 months before sowing month |
+| `rain_m0` | Monthly total rainfall in the sowing month (post-sowing days only) |
+| `rain_m1` … `rain_m8` | Monthly total rainfall, 1–8 months after sowing month |
+
 ---
-**Growth windows: based on APSIM**
-- `W1_estab` — Establishment
-- `W2_veg` — Vegetative growth
-- `W3_preAnth` — Pre-anthesis (critical for yield)
-- `W4_grainFill` — Grain filling
-- `W5_matur` — Maturation
 
+### Monthly Post-Sowing Features (9 months each)
 
-| Slot name | Meaning |
-|-----------|---------|
-| `mpre6` … `mpre1` | 6 calendar months before the sowing month |
+These variables are computed for each month from sowing onward (`m0` through `m8`), covering the full crop cycle.
+
+| Variable prefix | Unit | Description |
+|-----------------|------|-------------|
+| `rad_sum_m0` … `rad_sum_m8` | MJ/m² | Monthly cumulative solar radiation|
+| `fasw_mean_m0` … `fasw_mean_m8` | 0–2 | Monthly mean fraction of available soil water (SM / PAWC). Values > 1 indicate above field capacity. |
+| `gdd_m0` … `gdd_m8` | °Cd | Monthly growing degree days (base 0 °C). Tracks thermal accumulation through the crop cycle. |
+
 ---
+  
+### Feature Count Summary
+
+| Group | Columns | Count |
+|-------|---------|-------|
+| Static / identifiers | lat, lon, year, sowing_doy, wheat_yield, pawc_0_30_mm, ph_0_30 | 7 |
+| Monthly rain (pre-sow) | rain_mpre6 … rain_mpre1 | 6 |
+| Monthly rain (post-sow) | rain_m0 … rain_m8 | 9 |
+| Monthly radiation (post-sow) | rad_sum_m0 … rad_sum_m8 | 9 |
+| Monthly FASW (post-sow) | fasw_mean_m0 … fasw_mean_m8 | 9 |
+| Monthly GDD (post-sow) | gdd_m0 … gdd_m8 | 9 |
+| Seasonal aggregates | rain_preseason, rain_early, rain_late, gdd_may_nov, frost_days_aug_oct, heat_days_aug_oct | 6 |
+| **Total** | | **55** |
+
+---
+
 ## Questions by Session
 
 ### Session 1 — Data & Linear Regression
-1. What is in the dataset? 
-2. What drives yield most — rainfall or temperature? 
-3. How do you interpret regression coefficients? 
-4. What do residual plots reveal? 
-5. When does linear regression fail? 
+1. What is in the dataset?
+2. What drives yield most — rainfall or temperature?
+3. How do you interpret regression coefficients?
+4. What do residual plots reveal?
+5. When does linear regression fail?
 
 ### Session 2 — Random Forest
-1. Why do single trees overfit? 
-2. How does Random Forest fix the overfitting problem? 
-3. How many trees are enough? 
-4. What is permutation importance and why is it more reliable? 
-5. Temporal vs random validation — which is more realistic? 
+1. Why do single trees overfit?
+2. How does Random Forest fix the overfitting problem?
+3. How many trees are enough?
+4. What is permutation importance and why is it more reliable?
+5. Temporal vs random validation — which is more realistic?
 
 ### Session 3 — XGBoost
-1. What is the difference between bagging and boosting? 
+1. What is the difference between bagging and boosting?
 2. What does each XGBoost hyperparameter control?
-3. How do SHAP values explain individual predictions? 
-4. What are the limitations of tree-based models? 
+3. How do SHAP values explain individual predictions?
+4. What are the limitations of tree-based models?
 
 ### Session 4 — Neural Networks
-1. Why do we need activation functions? 
-2. How does the training loop work? 
-3. When does LSTM outperform MLP? 
-4. How do all models behave when extrapolating? 
+1. Why do we need activation functions?
+2. How does the training loop work?
+3. When does LSTM outperform MLP?
+4. How do all models behave when extrapolating?
 5. Which model should you use for which task?
 
 ---
@@ -127,4 +143,3 @@ The same feature are computed for every temporal slot (monthly, and crop-seasona
 | Uncertainty quantification | Session 4 (exercise) |
 
 ---
-
