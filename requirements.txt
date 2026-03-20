@@ -18,4 +18,5 @@ statsmodels
 scipy
 pyarrow
 fastparquet
+torch
 
