@@ -109,7 +109,6 @@ These variables are computed for each month from sowing onward (`m0` through `m8
 2. How does Random Forest fix the overfitting problem?
 3. How many trees are enough?
 4. What is permutation importance and why is it more reliable?
-5. Temporal vs random validation — which is more realistic?
 
 ### Session 3 — XGBoost
 1. What is the difference between bagging and boosting?
